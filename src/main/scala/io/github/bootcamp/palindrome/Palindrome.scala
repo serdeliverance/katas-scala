@@ -1,4 +1,4 @@
-package io.github.bootcamp
+package io.github.bootcamp.palindrome
 
 /**
   * No tailrec solution

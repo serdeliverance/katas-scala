@@ -1,12 +1,12 @@
-package io.github.bootcamp
+package io.github.bootcamp.palindrome
 
-import io.github.bootcamp.Palindrome.isPalindrome
+import io.github.bootcamp.palindrome.Palindrome.isPalindrome
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class PalindromeAltSpec extends AnyWordSpec with Matchers {
+class PalindromeSpec extends AnyWordSpec with Matchers {
 
-  "#PalidromeAlt" should {
+  "#Palidrome" should {
     "return true" in {
       val result = isPalindrome("abba")
 
