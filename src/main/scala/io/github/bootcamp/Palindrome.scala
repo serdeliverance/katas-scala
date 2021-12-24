@@ -1,8 +1,10 @@
 package io.github.bootcamp
 
+/**
+  * No tailrec solution
+  */
 object Palindrome {
 
-  // No tailrec solution
   def isPalindrome(word: String): Boolean =
     word == reverse(word.toList)
 

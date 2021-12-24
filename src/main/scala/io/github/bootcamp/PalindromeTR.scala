@@ -2,6 +2,10 @@ package io.github.bootcamp
 
 import scala.annotation.tailrec
 
+/**
+  * tailrec solution
+  *
+  */
 object PalindromeTR {
 
   def isPalindrome(word: String): Boolean =
