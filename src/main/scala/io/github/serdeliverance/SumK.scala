@@ -1,7 +1,5 @@
 package io.github.serdeliverance
 
-import scala.annotation.tailrec
-
 object SumK {
 
   /**
