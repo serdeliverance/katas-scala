@@ -58,11 +58,35 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe list.tail
     }
+
+    "map elements correctly" in {
+      val result = list.map(n => n.toString)
+
+      val expected = "1" :: "2" :: "3" :: RNil
+
+      result mustBe expected
+    }
+
+    "flatMap elements correctly" in {
+      val result = list.flatMap(n => n :: n + 1 :: RNil)
+
+      val expected = 1 :: 2 :: 2 :: 3 :: 3 :: 4 :: RNil
+
+      result mustBe expected
+    }
+
+    "filter elements correctly" in {
+      val result = list.filter(n => n > 1)
+
+      val expected = 2 :: 3 :: RNil
+
+      result mustBe expected
+    }
   }
 
   "Empty list" should {
 
-    val list = RNil
+    val list: RList[Int] = RNil
 
     "return length equals to 0" in {
       val result = list.length
@@ -72,6 +96,24 @@ class RListSpec extends AnyWordSpec with Matchers {
 
     "reverse list" in {
       val result = list.reverse
+
+      result mustBe RNil
+    }
+
+    "map elements correctly" in {
+      val result = list.map(n => n.toString)
+
+      result mustBe RNil
+    }
+
+    "flatMap elements correctly" in {
+      val result = list.flatMap(n => n :: n :: RNil)
+
+      result mustBe RNil
+    }
+
+    "filter elements correctly" in {
+      val result = list.filter(n => n > 1)
 
       result mustBe RNil
     }

@@ -18,6 +18,12 @@ sealed abstract class RList[+T] {
   def ++[S >: T](anotherList: RList[S]): RList[S]
 
   def removeAt(index: Int): RList[T]
+
+  def map[S](f: T => S): RList[S]
+
+  def flatMap[S](f: T => RList[S]): RList[S]
+
+  def filter(f: T => Boolean): RList[T]
 }
 
 case object RNil extends RList[Nothing] {
@@ -36,6 +42,12 @@ case object RNil extends RList[Nothing] {
   override def ++[S >: Nothing](anotherList: RList[S]): RList[S] = anotherList
 
   override def removeAt(index: Int): RList[Nothing] = this
+
+  override def map[S](f: Nothing => S): RList[S] = this
+
+  override def flatMap[S](f: Nothing => RList[S]): RList[S] = this
+
+  override def filter(f: Nothing => Boolean): RList[Nothing] = this
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -91,6 +103,34 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
     else removeAtTailrec(0, this, RNil)
   }
 
+  override def map[S](f: T => S): RList[S] = {
+    @tailrec
+    def mapTailrec(remaining: RList[T], result: RList[S]): RList[S] =
+      if (remaining.isEmpty) result.reverse
+      else mapTailrec(remaining.tail, f(remaining.head) :: result)
+
+    mapTailrec(this, RNil)
+  }
+
+  override def flatMap[S](f: T => RList[S]): RList[S] = {
+    @tailrec
+    def flatMapTailrec(remaining: RList[T], result: RList[S]): RList[S] =
+      if (remaining.isEmpty) result.reverse
+      else flatMapTailrec(remaining.tail, f(remaining.head).reverse ++ result)
+
+    flatMapTailrec(this, RNil)
+  }
+
+  override def filter(predicate: T => Boolean): RList[T] = {
+    @tailrec
+    def filterTailrec(remaining: RList[T], result: RList[T]): RList[T] =
+      if (remaining.isEmpty) result.reverse
+      else if (predicate(remaining.head)) filterTailrec(remaining.tail, remaining.head :: result)
+      else filterTailrec(remaining.tail, result)
+
+    filterTailrec(this, RNil)
+  }
+
   override def toString: String = {
     @tailrec
     def toStringTailrec[T](remaining: RList[T], result: String): String =
@@ -100,13 +140,4 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
 
     "[" + toStringTailrec(this, "") + "]"
   }
-}
-
-object Ble extends App {
-
-  val list = 1 :: 2 :: 3 :: RNil
-
-  val anotherList = 4 :: 5 :: RNil
-
-  println(list ++ anotherList)
 }
