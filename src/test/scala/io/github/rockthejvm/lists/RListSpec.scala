@@ -32,6 +32,32 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe expected
     }
+
+    "remove element when index < 0" in {
+      val result = list.removeAt(-1)
+
+      result mustBe list
+    }
+
+    "remove element correctly" in {
+      val result = list.removeAt(1)
+
+      val expected = 1 :: 3 :: RNil
+
+      result mustBe expected
+    }
+
+    "remove element when index out of bound" in {
+      val result = list.removeAt(5)
+
+      result mustBe list
+    }
+
+    "remove element when index == 0" in {
+      val result = list.removeAt(0)
+
+      result mustBe list.tail
+    }
   }
 
   "Empty list" should {

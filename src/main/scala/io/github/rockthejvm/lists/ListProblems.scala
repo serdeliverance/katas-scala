@@ -16,6 +16,8 @@ sealed abstract class RList[+T] {
   def reverse: RList[T]
 
   def ++[S >: T](anotherList: RList[S]): RList[S]
+
+  def removeAt(index: Int): RList[T]
 }
 
 case object RNil extends RList[Nothing] {
@@ -32,6 +34,8 @@ case object RNil extends RList[Nothing] {
   override def reverse: RList[Nothing] = this
 
   override def ++[S >: Nothing](anotherList: RList[S]): RList[S] = anotherList
+
+  override def removeAt(index: Int): RList[Nothing] = this
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -39,14 +43,14 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
 
   override def apply(index: Int): T = {
     @tailrec
-    def applyTailrec(list: RList[T], currentIndex: Int, index: Int): T =
+    def applyTailrec(list: RList[T], currentIndex: Int): T =
       list match {
         case RNil           => throw new NoSuchElementException
-        case ::(head, tail) => if (currentIndex == index) head else applyTailrec(tail, currentIndex + 1, index)
+        case ::(head, tail) => if (currentIndex == index) head else applyTailrec(tail, currentIndex + 1)
       }
 
     if (index < 0) throw new NoSuchElementException
-    else applyTailrec(this, 0, index)
+    else applyTailrec(this, 0)
   }
 
   override def length: Int = {
@@ -73,6 +77,18 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
       else concatTailrec(remainingList.tail, remainingList.head :: acc)
 
     concatTailrec(this.reverse, anotherList)
+  }
+
+  override def removeAt(index: Int): RList[T] = {
+    @tailrec
+    def removeAtTailrec(currentIndex: Int, remaining: RList[T], predecessors: RList[T]): RList[T] =
+      if (currentIndex == index) predecessors.reverse ++ remaining.tail // ???
+      else if (remaining.tail.isEmpty) this
+      else removeAtTailrec(currentIndex + 1, remaining.tail, remaining.head :: predecessors)
+
+    if (index < 0) this
+    else if (index == 0) this.tail
+    else removeAtTailrec(0, this, RNil)
   }
 
   override def toString: String = {
