@@ -14,6 +14,8 @@ sealed abstract class RList[+T] {
   def length: Int
 
   def reverse: RList[T]
+
+  def ++[S >: T](anotherList: RList[S]): RList[S]
 }
 
 case object RNil extends RList[Nothing] {
@@ -28,6 +30,8 @@ case object RNil extends RList[Nothing] {
   override def length: Int = 0
 
   override def reverse: RList[Nothing] = this
+
+  override def ++[S >: Nothing](anotherList: RList[S]): RList[S] = anotherList
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -62,6 +66,15 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
     reverseTailrec(this, RNil)
   }
 
+  override def ++[S >: T](anotherList: RList[S]): RList[S] = {
+    @tailrec
+    def concatTailrec(remainingList: RList[S], acc: RList[S]): RList[S] =
+      if (remainingList.isEmpty) acc
+      else concatTailrec(remainingList.tail, remainingList.head :: acc)
+
+    concatTailrec(this.reverse, anotherList)
+  }
+
   override def toString: String = {
     @tailrec
     def toStringTailrec[T](remaining: RList[T], result: String): String =
@@ -71,4 +84,13 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
 
     "[" + toStringTailrec(this, "") + "]"
   }
+}
+
+object Ble extends App {
+
+  val list = 1 :: 2 :: 3 :: RNil
+
+  val anotherList = 4 :: 5 :: RNil
+
+  println(list ++ anotherList)
 }

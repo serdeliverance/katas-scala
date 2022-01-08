@@ -22,6 +22,16 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe expected
     }
+
+    "concat list successfully" in {
+      val anotherList = 4 :: 5 :: RNil
+
+      val result = list ++ anotherList
+
+      val expected = 1 :: 2 :: 3 :: 4 :: 5 :: RNil
+
+      result mustBe expected
+    }
   }
 
   "Empty list" should {
