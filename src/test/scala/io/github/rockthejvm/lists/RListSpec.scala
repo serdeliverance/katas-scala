@@ -91,7 +91,11 @@ class RListSpec extends AnyWordSpec with Matchers {
       result mustBe (1, 3) :: (2, 2) :: (3, 1) :: (4, 1) :: (5, 2) :: RNil
     }
 
-    // TODO add headOption tests
+    "head option" in {
+      val result = list.headOption
+
+      result mustBe Some(1)
+    }
   }
 
   "Empty list" should {
@@ -134,6 +138,10 @@ class RListSpec extends AnyWordSpec with Matchers {
       result mustBe RNil
     }
 
-    // TODO add headOption tests
+    "head option correctly" in {
+      val result = list.headOption
+
+      result mustBe None
+    }
   }
 }
