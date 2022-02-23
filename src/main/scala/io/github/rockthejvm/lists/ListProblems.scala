@@ -27,6 +27,20 @@ sealed abstract class RList[+T] {
   def filter(f: T => Boolean): RList[T]
 
   def rle: RList[(T, Int)]
+
+  def duplicateEach(n: Int): RList[T]
+}
+
+object RList {
+
+  def fill[T](times: Int)(element: T): RList[T] = {
+    @tailrec
+    def fillTailrec(counter: Int, acc: RList[T]): RList[T] =
+      if (counter == 0) acc
+      else fillTailrec(counter - 1, element :: acc)
+
+    fillTailrec(times, RNil)
+  }
 }
 
 case object RNil extends RList[Nothing] {
@@ -54,7 +68,12 @@ case object RNil extends RList[Nothing] {
 
   override def filter(f: Nothing => Boolean): RList[Nothing] = this
 
+  /**
+   * Medium difficulty problems
+   */
   override def rle: RList[(Nothing, Int)] = this
+
+  override def duplicateEach(n: Int): RList[Nothing] = RNil
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -155,8 +174,7 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
         case None => (currentAcc :: result).reverse
         case Some(current) =>
           val (newCurrentAcc, newResult) = {
-            // TODO improve tuple readability
-            if (current == prev) ((currentAcc._1, currentAcc._2 + 1), result)
+            if (current == prev) (currentAcc.copy(_2 = currentAcc._2 + 1), result)
             else ((current, 1), currentAcc :: result)
           }
           rleTailrec(current, newCurrentAcc, newResult, remaining.tail)
@@ -166,4 +184,7 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
   }
 
   override def headOption: Option[T] = Some(this.head)
+
+  override def duplicateEach(n: Int): RList[T] =
+    this.flatMap(t => RList.fill[T](n)(t))
 }

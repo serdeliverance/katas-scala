@@ -3,6 +3,8 @@ package io.github.rockthejvm.lists
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import io.github.rockthejvm.lists.RList._
+
 class RListSpec extends AnyWordSpec with Matchers {
   "Non empty Rlist" should {
 
@@ -96,6 +98,12 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe Some(1)
     }
+
+    "duplicate each" in {
+      val result = list.duplicateEach(3)
+
+      result mustBe 1 :: 1 :: 1 :: 2 :: 2 :: 2 :: 3 :: 3 :: 3 :: RNil
+    }
   }
 
   "Empty list" should {
@@ -143,5 +151,18 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe None
     }
+
+    "duplicate each" in {
+      val result = list.duplicateEach(3)
+
+      result mustBe RNil
+    }
+  }
+
+  // Companion methods
+  "fill elements correctly on non empty list" in {
+    val result = fill(3)(1)
+
+    result mustBe 1 :: 1 :: 1 :: RNil
   }
 }
