@@ -1,2 +1,1 @@
 # katas-scala
-# katas-scala
