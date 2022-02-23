@@ -7,6 +7,8 @@ sealed abstract class RList[+T] {
   def tail: RList[T]
   def isEmpty: Boolean
 
+  def headOption: Option[T]
+
   def ::[S >: T](elem: S): RList[S] = new ::(elem, this)
 
   def apply(index: Int): T
@@ -19,17 +21,20 @@ sealed abstract class RList[+T] {
 
   def removeAt(index: Int): RList[T]
 
+  // the big 3
   def map[S](f: T => S): RList[S]
-
   def flatMap[S](f: T => RList[S]): RList[S]
-
   def filter(f: T => Boolean): RList[T]
+
+  def rle: RList[(T, Int)]
 }
 
 case object RNil extends RList[Nothing] {
   override def head: Nothing        = throw new NoSuchElementException
   override def tail: RList[Nothing] = throw new NoSuchElementException
   override def isEmpty: Boolean     = true
+
+  override def headOption: Option[Nothing] = None
 
   override def toString: String = "[]"
 
@@ -48,6 +53,8 @@ case object RNil extends RList[Nothing] {
   override def flatMap[S](f: Nothing => RList[S]): RList[S] = this
 
   override def filter(f: Nothing => Boolean): RList[Nothing] = this
+
+  override def rle: RList[(Nothing, Int)] = this
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -140,4 +147,23 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
 
     "[" + toStringTailrec(this, "") + "]"
   }
+
+  override def rle: RList[(T, Int)] = {
+    @tailrec
+    def rleTailrec(prev: T, currentAcc: (T, Int), result: RList[(T, Int)], remaining: RList[T]): RList[(T, Int)] =
+      remaining.headOption match {
+        case None => (currentAcc :: result).reverse
+        case Some(current) =>
+          val (newCurrentAcc, newResult) = {
+            // TODO improve tuple readability
+            if (current == prev) ((currentAcc._1, currentAcc._2 + 1), result)
+            else ((current, 1), currentAcc :: result)
+          }
+          rleTailrec(current, newCurrentAcc, newResult, remaining.tail)
+      }
+
+    rleTailrec(this.head, (this.head, 0), RNil, this)
+  }
+
+  override def headOption: Option[T] = Some(this.head)
 }

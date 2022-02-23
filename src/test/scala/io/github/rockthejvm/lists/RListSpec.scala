@@ -82,6 +82,16 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe expected
     }
+
+    "rle list correctly" in {
+      val someList = 1 :: 1 :: 1 :: 2 :: 2 :: 3 :: 4 :: 5 :: 5 :: RNil
+
+      val result = someList.rle
+
+      result mustBe (1, 3) :: (2, 2) :: (3, 1) :: (4, 1) :: (5, 2) :: RNil
+    }
+
+    // TODO add headOption tests
   }
 
   "Empty list" should {
@@ -117,5 +127,13 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe RNil
     }
+
+    "rle elements correctly" in {
+      val result = list.rle
+
+      result mustBe RNil
+    }
+
+    // TODO add headOption tests
   }
 }
