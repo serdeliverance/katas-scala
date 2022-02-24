@@ -104,6 +104,33 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe 1 :: 1 :: 1 :: 2 :: 2 :: 2 :: 3 :: 3 :: 3 :: RNil
     }
+
+    "rotate array" when {
+      "positions to rotate are less than the list length" in {
+        val otherList = 1 :: 2 :: 3 :: 4 :: RNil
+
+        val result = otherList.rotate(2)
+
+        result mustBe 3 :: 4 :: 1 :: 2 :: RNil
+      }
+
+      "positions to rotate are equals to the list length" in {
+        val otherList = 1 :: 2 :: 3 :: RNil
+
+        val result = otherList.rotate(3)
+
+        result mustBe 1 :: 2 :: 3 :: RNil
+      }
+
+      "positions to rotate are more than the list length" in {
+        val otherList = 1 :: 2 :: 3 :: RNil
+
+        val result = otherList.rotate(5)
+
+        result mustBe 3 :: 1 :: 2 :: RNil
+      }
+    }
+
   }
 
   "Empty list" should {
@@ -154,6 +181,12 @@ class RListSpec extends AnyWordSpec with Matchers {
 
     "duplicate each" in {
       val result = list.duplicateEach(3)
+
+      result mustBe RNil
+    }
+
+    "rotate elements" in {
+      val result = list.rotate(3)
 
       result mustBe RNil
     }

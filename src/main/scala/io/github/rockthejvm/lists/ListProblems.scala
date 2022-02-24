@@ -26,9 +26,14 @@ sealed abstract class RList[+T] {
   def flatMap[S](f: T => RList[S]): RList[S]
   def filter(f: T => Boolean): RList[T]
 
+  /**
+   * Medium difficulty problems
+   */
   def rle: RList[(T, Int)]
 
   def duplicateEach(n: Int): RList[T]
+
+  def rotate(positions: Int): RList[T]
 }
 
 object RList {
@@ -68,12 +73,11 @@ case object RNil extends RList[Nothing] {
 
   override def filter(f: Nothing => Boolean): RList[Nothing] = this
 
-  /**
-   * Medium difficulty problems
-   */
   override def rle: RList[(Nothing, Int)] = this
 
-  override def duplicateEach(n: Int): RList[Nothing] = RNil
+  override def duplicateEach(n: Int): RList[Nothing] = this
+
+  override def rotate(positions: Int): RList[Nothing] = this
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -187,4 +191,20 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
 
   override def duplicateEach(n: Int): RList[T] =
     this.flatMap(t => RList.fill[T](n)(t))
+
+  // TODO implement
+  // TODO change return type to RList[RList[T]]
+  def splitAt(index: Int): RList[RList[T]] =
+    if (index < this.length) doSplit(index)
+    else ::(this)
+
+  override def rotate(positions: Int): RList[T] = {
+    def doRotate(positions: Int): RList[T] = {
+      val slices = this.splitAt(positions)
+      slices(1) ++ slices(2)
+    }
+    if (positions < this.length) doRotate(positions)
+    else if (positions == this.length) this
+    else doRotate(positions % this.length)
+  }
 }
