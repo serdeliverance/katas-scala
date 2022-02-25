@@ -192,19 +192,12 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
   override def duplicateEach(n: Int): RList[T] =
     this.flatMap(t => RList.fill[T](n)(t))
 
-  // TODO implement
-  // TODO change return type to RList[RList[T]]
-  def splitAt(index: Int): RList[RList[T]] =
-    if (index < this.length) doSplit(index)
-    else ::(this)
-
   override def rotate(positions: Int): RList[T] = {
-    def doRotate(positions: Int): RList[T] = {
-      val slices = this.splitAt(positions)
-      slices(1) ++ slices(2)
+    def doRotate(rotations: Int, remaining: RList[T], buffer: RList[T]): RList[T] = {
+      if (rotations == 0) remaining ++ buffer.reverse
+      else doRotate(rotations - 1, remaining.tail, remaining.head :: buffer)
     }
-    if (positions < this.length) doRotate(positions)
-    else if (positions == this.length) this
-    else doRotate(positions % this.length)
+    if (positions == this.length) this
+    else doRotate(positions % this.length, this, RNil)
   }
 }
