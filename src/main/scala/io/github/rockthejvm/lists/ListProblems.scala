@@ -144,8 +144,26 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
       if (remaining.isEmpty) result.reverse
       else flatMapTailrec(remaining.tail, f(remaining.head).reverse ++ result)
 
+    /*
+     *  betterFlatMap is more performant in terms of computational complexity (Big O) than
+     *  the original flatMap implementation
+     */
+    @tailrec
+    def betterFlatMap(remaining: RList[T], accumulator: RList[RList[S]]): RList[S] =
+      if (remaining.isEmpty) concatenateAll(accumulator, RNil)
+      else betterFlatMap(remaining.tail, f(remaining.head).reverse :: accumulator)
+
+    @tailrec
+    def concatenateAll(elements: RList[RList[S]] , currentList: RList[S], accumulator: RList[S]): RList[S] = {
+      if (currentList.isEmpty && elements.isEmpty) accumulator
+      else if (currentList.isEmpty) concatenateAll(elements.tail, elements.head, accumulator)
+      else concatenateAll(elements, currentList.tail, currentList.head :: accumulator)
+    }
+
     flatMapTailrec(this, RNil)
   }
+
+
 
   override def filter(predicate: T => Boolean): RList[T] = {
     @tailrec
