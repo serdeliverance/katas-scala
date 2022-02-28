@@ -29,6 +29,8 @@ sealed abstract class RList[+T] {
   def rle: RList[(T, Int)]
 
   def duplicateEach(n: Int): RList[T]
+
+  def sorted(f: (T, T) => Boolean): RList[T]
 }
 
 object RList {
@@ -73,7 +75,9 @@ case object RNil extends RList[Nothing] {
    */
   override def rle: RList[(Nothing, Int)] = this
 
-  override def duplicateEach(n: Int): RList[Nothing] = RNil
+  override def duplicateEach(n: Int): RList[Nothing] = this
+
+  override def sorted(f: (Nothing, Nothing) => Boolean): RList[Nothing] = this
 }
 
 case class ::[+T](override val head: T, override val tail: RList[T]) extends RList[T] {
@@ -150,7 +154,7 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
      */
     @tailrec
     def betterFlatMap(remaining: RList[T], accumulator: RList[RList[S]]): RList[S] =
-      if (remaining.isEmpty) concatenateAll(accumulator, RNil)
+      if (remaining.isEmpty) concatenateAll(accumulator, RNil, RNil)
       else betterFlatMap(remaining.tail, f(remaining.head).reverse :: accumulator)
 
     @tailrec
@@ -205,4 +209,6 @@ case class ::[+T](override val head: T, override val tail: RList[T]) extends RLi
 
   override def duplicateEach(n: Int): RList[T] =
     this.flatMap(t => RList.fill[T](n)(t))
+
+  override def sorted(f: (T, T) => Boolean): RList[T] = ???
 }

@@ -104,6 +104,13 @@ class RListSpec extends AnyWordSpec with Matchers {
 
       result mustBe 1 :: 1 :: 1 :: 2 :: 2 :: 2 :: 3 :: 3 :: 3 :: RNil
     }
+
+    "sorte elements" in {
+      val anotherList = 1 :: 5 :: 2 :: 7 :: 3 :: 9 :: 10 :: RNil
+      val result = anotherList.sorted((x, y) => x > y)
+
+      result mustBe 10 :: 9 :: 7 :: 5 :: 3 :: 2 :: 1 :: RNil
+    }
   }
 
   "Empty list" should {
@@ -154,6 +161,12 @@ class RListSpec extends AnyWordSpec with Matchers {
 
     "duplicate each" in {
       val result = list.duplicateEach(3)
+
+      result mustBe RNil
+    }
+
+    "sorte elements" in {
+      val result = list.sorted((x, y) => x > y)
 
       result mustBe RNil
     }
